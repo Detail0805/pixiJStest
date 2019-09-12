@@ -1,0 +1,83 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Make a sprite from an image</title>
+
+<body>
+    <script src="../pixi/pixi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+    <script>
+        var width = 1000,
+            height = 800;
+        //Create a Pixi Application
+        let app = new PIXI.Application({
+            width: width,
+            height: height,
+            antialiasing: true,
+            transparent: false,
+            resolution: 1,
+            backgroundColor: 0x1099bb,
+        });
+
+        //Add the canvas that Pixi automatically created for you to the HTML document
+        document.body.appendChild(app.view);
+
+        //load an image and run the `setup` function when it's done
+        PIXI.loader
+            .add("images/seven.png")
+            .load(setup);
+
+        //This `setup` function will run when the image has loaded
+        function setup() {
+
+            //Create the cat sprite
+            // let cat = new PIXI.Sprite(PIXI.loader.resources["images/cat.png"].texture);
+            var tl = new TimelineMax();
+            let cat = new PIXI.Sprite(PIXI.loader.resources["images/seven.png"].texture),
+                cat2 = new PIXI.Sprite(PIXI.loader.resources["images/seven.png"].texture),
+                cat3 = new PIXI.Sprite(PIXI.loader.resources["images/seven.png"].texture),
+                cat4 = new PIXI.Sprite(PIXI.loader.resources["images/seven.png"].texture);
+            var myhub = [cat, cat2, cat3, cat4];
+            myhub.forEach(function(item, index) { //function(item, index, array)
+                item.width = 200;
+                item.height = 200;
+                item.x = 20 + (width / myhub.length) * index
+                    // tl.to(item, 1, {
+                    //     y: 600
+                    // });
+            });
+
+            //You can also create the `cat` sprite from the texture, like this:
+            //let cat = new PIXI.Sprite(PIXI.TextureCache["images/cat.png"]);
+
+            //Add the cat to the stage
+            app.stage.addChild(cat);
+            app.stage.addChild(cat2);
+            app.stage.addChild(cat3);
+            app.stage.addChild(cat4);
+            tl.to(myhub, 1, {
+                duration: 2.5,
+                ease: Back.easeOut.config(1.7),
+                y: 500
+            });
+
+            //If you ever need to, here's how you can clean out WebGL's GPU
+            //memory manually
+            /*
+            Object.keys(TextureCache).forEach(function(texture) {
+              TextureCache[texture].destroy(true);
+            });
+            */
+        }
+    </script>
+
+    <table width="1000" height="800">
+
+        <tr>
+            <tr>
+                <td align="center" name="mygood" valign="center">HTML 水平置中</td>
+            </tr>
+        </tr>
+    </table>
+
+
+</body>
