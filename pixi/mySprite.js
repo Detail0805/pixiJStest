@@ -141,6 +141,14 @@ function onAssetsLoaded() {
         // Build the symbols
         for (let j = 0; j < 7; j++) {
             const symbol = new PIXI.Sprite(slotTextures[Math.floor(Math.random() * slotTextures.length)]);
+            var maskGraphic = new PIXI.Graphics();
+            maskGraphic.beginFill(0xff0000);
+            maskGraphic.lineStyle(10, 0x000000, 0.5); // 為了明顯，用了寬度 50px 的粗線條
+            maskGraphic.drawRect(0, 140, 920, 385); //(整個x的起點,整個框的y起點,x的長度,y的長度))
+            maskGraphic.endFill();
+            // reelContainer.mask = maskGraphic;
+            symbol.mask = maskGraphic;
+
             // Scale the symbol to fit symbol area.
             symbol.y = j * SYMBOL_SIZE;
             symbol.scale.x = symbol.scale.y = Math.min(SYMBOL_SIZE / symbol.width, SYMBOL_SIZE / symbol.height);
@@ -161,8 +169,8 @@ function onAssetsLoaded() {
     top.beginFill(0, 1);
     top.drawRect(0, 0, app.screen.width, margin);
     const bottom = new PIXI.Graphics();
-    bottom.beginFill(0, 1);
-    bottom.drawRect(0, SYMBOL_SIZE * 3 + margin, app.screen.width, margin);
+    bottom.beginFill(0xFF3300);
+    bottom.drawCircle(568, 587, 40);
 
     // Add play text
     const style = new PIXI.TextStyle({
@@ -182,9 +190,14 @@ function onAssetsLoaded() {
         wordWrapWidth: 440,
     });
 
-    const playText = new PIXI.Text('Spin the wheels!', style);
-    playText.x = Math.round((bottom.width - playText.width) / 2);
-    playText.y = app.screen.height - margin + Math.round((margin - playText.height) / 2);
+    const playText = new PIXI.Text('Spin!', {
+        fontFamily: 'Snippet',
+        fontSize: 20,
+        fill: 'white',
+        align: 'left'
+    });
+    playText.x = 550;
+    playText.y = 578;
     bottom.addChild(playText);
 
     // Add header text
@@ -192,26 +205,11 @@ function onAssetsLoaded() {
     headerText.x = Math.round((top.width - headerText.width) / 2);
     headerText.y = Math.round((margin - headerText.height) / 2);
 
-    //mask
-    // const thing = new PIXI.Graphics();
-    // thing.beginFill(0xff0000);
-    // app.stage.addChild(thing);
-    // thing.x = app.screen.width / 2;
-    // thing.y = app.screen.height / 2;
-    // reelContainer.mask = thing;
-
-    //mask
-    var maskGraphic = new PIXI.Graphics();
-    maskGraphic.beginFill(0xff0000);
-    maskGraphic.lineStyle(10, 0x000000, 0.5); // 為了明顯，用了寬度 50px 的粗線條
-    maskGraphic.drawRect(200, 140, 740, 380);
-    maskGraphic.endFill();
-    // reelContainer.mask = maskGraphic;
 
     top.addChild(headerText);
 
     // app.stage.addChild(top);
-    // app.stage.addChild(bottom);
+    app.stage.addChild(bottom);
 
     // Set the interactivity.
     bottom.interactive = true;
