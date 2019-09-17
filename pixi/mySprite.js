@@ -1,9 +1,3 @@
-function how() {
-
-    console.log("   142536145646556")
-
-}
-
 // var width = 1000,
 //     height = 800;
 // //Create a Pixi Application
@@ -80,7 +74,8 @@ function how() {
 
 // }
 
-const app = new PIXI.Application({ backgroundColor: 0x1099bb });
+// const app = new PIXI.Application({ backgroundColor: 0xffffff });
+const app = new PIXI.Application({ width: 1136, height: 639, backgroundColor: 0xffffff });
 document.body.appendChild(app.view);
 
 app.loader
@@ -94,11 +89,11 @@ app.loader
     .load(onAssetsLoaded);
 
 const REEL_WIDTH = 160;
-const SYMBOL_SIZE = 150;
-
+const SYMBOL_SIZE = 140; //圖片大小
 // onAssetsLoaded handler builds the example.
 function onAssetsLoaded() {
     // Create different slot symbols.
+
     const slotTextures = [
         PIXI.Texture.from('images/Symbol_01.png'),
         PIXI.Texture.from('images/Symbol_02.png'),
@@ -112,11 +107,26 @@ function onAssetsLoaded() {
     // Build the reels
     const reels = [];
     const reelContainer = new PIXI.Container();
-    for (let i = 0; i < 5; i++) {
-        const rc = new PIXI.Container();
-        rc.x = i * REEL_WIDTH;
-        reelContainer.addChild(rc);
 
+    //初始化卷軸內部
+    const bg = new PIXI.Container();
+    const background = new PIXI.Sprite(PIXI.Texture.from('images/bg.jpg'));
+    background.width = 1136
+    background.height = 639
+    background.x = -336
+    background.y = -100
+    bg.addChild(background)
+    reelContainer.addChild(bg);
+    var x;
+
+    for (let i = 0; i < 5; i++) { //滾筒數量
+        const rc = new PIXI.Container();
+        if (i == 0) {
+            rc.x = x = (i - 1) * REEL_WIDTH + 20; //-140
+        } else {
+            rc.x = 150.5 * i + x;
+        }
+        reelContainer.addChild(rc);
         const reel = {
             container: rc,
             symbols: [],
@@ -129,7 +139,7 @@ function onAssetsLoaded() {
         rc.filters = [reel.blur];
 
         // Build the symbols
-        for (let j = 0; j < 8; j++) {
+        for (let j = 0; j < 7; j++) {
             const symbol = new PIXI.Sprite(slotTextures[Math.floor(Math.random() * slotTextures.length)]);
             // Scale the symbol to fit symbol area.
             symbol.y = j * SYMBOL_SIZE;
@@ -138,6 +148,7 @@ function onAssetsLoaded() {
             reel.symbols.push(symbol);
             rc.addChild(symbol);
         }
+
         reels.push(reel);
     }
     app.stage.addChild(reelContainer);
@@ -180,10 +191,27 @@ function onAssetsLoaded() {
     const headerText = new PIXI.Text('PIXI MONSTER SLOTS!', style);
     headerText.x = Math.round((top.width - headerText.width) / 2);
     headerText.y = Math.round((margin - headerText.height) / 2);
+
+    //mask
+    // const thing = new PIXI.Graphics();
+    // thing.beginFill(0xff0000);
+    // app.stage.addChild(thing);
+    // thing.x = app.screen.width / 2;
+    // thing.y = app.screen.height / 2;
+    // reelContainer.mask = thing;
+
+    //mask
+    var maskGraphic = new PIXI.Graphics();
+    maskGraphic.beginFill(0xff0000);
+    maskGraphic.lineStyle(10, 0x000000, 0.5); // 為了明顯，用了寬度 50px 的粗線條
+    maskGraphic.drawRect(200, 140, 740, 380);
+    maskGraphic.endFill();
+    // reelContainer.mask = maskGraphic;
+
     top.addChild(headerText);
 
-    app.stage.addChild(top);
-    app.stage.addChild(bottom);
+    // app.stage.addChild(top);
+    // app.stage.addChild(bottom);
 
     // Set the interactivity.
     bottom.interactive = true;
