@@ -1,0 +1,170 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Make a sprite from an image</title>
+
+<body>
+    <!-- <script src="../pixi/mySimpleSeven.js"></script> -->
+    <script src="../pixi/pixi.min.js"></script>
+    <script type="text/javascript">
+        var app = new PIXI.Application(800, 600, {
+            backgroundColor: 0x1099bb
+        });
+        document.body.appendChild(app.view);
+
+        var container = new PIXI.Container();
+
+        app.stage.addChild(container);
+
+        // Create a new texture
+        // var texture = PIXI.Texture.fromImage('images/Symbol_01.png');
+
+        // Create a 5 x5 grid of bunnies
+        // for (var i = 0; i < 25; i++) {
+        //     var bunny = new PIXI.Sprite(texture);
+        //     bunny.anchor.set(0.5);
+        //     bunny.x = (i % 5) * 40;
+        //     bunny.y = Math.floor(i / 5) * 40;
+        //     container.addChild(bunny);
+        // }
+        // 畫一個方塊
+
+        var bunny = PIXI.Sprite.fromImage('images/Symbol_01.png');
+        container.addChild(bunny);
+
+        var testGraphics = new PIXI.Graphics();
+        testGraphics.beginFill(0xff0000);
+        testGraphics.drawRect(0, 0, 300, 300);
+        testGraphics.endFill();
+        container.addChild(testGraphics);
+        // app.stage.addChild(testGraphics);
+
+
+        // 這是一隻兔子
+        var bunny = PIXI.Sprite.fromImage('images/Symbol_01.png');
+        bunny.x = 50;
+        bunny.y = 50;
+        testGraphics.addChild(bunny);
+        var maskGraphic = new PIXI.Graphics();
+        maskGraphic.beginFill(808080); // 遮罩使用不透明色塊
+        maskGraphic.lineStyle(50, 0x000000, 0.5);
+        maskGraphic.drawRect(10, 30, 100, 150);
+        maskGraphic.endFill();
+        app.stage.addChild(maskGraphic);
+        maskGraphic.x = 250;
+        maskGraphic.y = 150;
+        // testGraphics.addChild(maskGraphic)
+
+        bunny.mask = maskGraphic;
+
+        // Move container to the center
+        container.x = app.screen.width / 2;
+        container.y = app.screen.height / 2;
+
+        // Center bunny sprite in local container coordinates
+        container.pivot.x = container.width / 2;
+        container.pivot.y = container.height / 2;
+
+
+        var container2 = new PIXI.Container();
+
+        container.addChild(container2);
+
+
+        // Listen for animate update
+        app.ticker.add(function(delta) {
+            // rotate the container!
+            // use delta to create frame-independent transform
+            container.rotation -= 0.01 * delta;
+        });
+
+
+
+        const sprites = new PIXI.ParticleContainer(10, {
+            scale: true,
+            position: true,
+            rotation: true,
+            uvs: true,
+            alpha: true
+        });
+        app.stage.addChild(sprites);
+
+        // create an array to store all the sprites
+        const maggots = [];
+
+        const totalSprites = 10000;
+
+        for (let i = 0; i < totalSprites; i++) {
+            // create a new Sprite
+            const dude = PIXI.Sprite.from('images/maggot_tiny.png');
+
+            dude.tint = Math.random() * 0xE8D4CD;
+
+            // set the anchor point so the texture is centerd on the sprite
+            dude.anchor.set(0.5);
+
+            // different maggots, different sizes
+            dude.scale.set(0.8 + Math.random() * 0.3);
+
+            // scatter them all
+            dude.x = Math.random() * app.screen.width;
+            dude.y = Math.random() * app.screen.height;
+
+            dude.tint = Math.random() * 0x808080;
+
+            // create a random direction in radians
+            dude.direction = Math.random() * Math.PI * 2;
+
+            // this number will be used to modify the direction of the sprite over time
+            dude.turningSpeed = Math.random() - 0.8;
+
+            // create a random speed between 0 - 2, and these maggots are slooww
+            dude.speed = (2 + Math.random() * 2) * 0.2;
+
+            dude.offset = Math.random() * 100;
+
+            // finally we push the dude into the maggots array so it it can be easily accessed later
+            maggots.push(dude);
+
+            sprites.addChild(dude);
+        }
+
+        // create a bounding box box for the little maggots
+        const dudeBoundsPadding = 100;
+        const dudeBounds = new PIXI.Rectangle(-dudeBoundsPadding, -dudeBoundsPadding,
+            app.screen.width + dudeBoundsPadding * 2,
+            app.screen.height + dudeBoundsPadding * 2,
+        );
+
+        let tick = 0;
+
+        app.ticker.add(() => {
+            // iterate through the sprites and update their position
+            for (let i = 0; i < maggots.length; i++) {
+                const dude = maggots[i];
+                dude.scale.y = 0.95 + Math.sin(tick + dude.offset) * 0.05;
+                dude.direction += dude.turningSpeed * 0.01;
+                dude.x += Math.sin(dude.direction) * (dude.speed * dude.scale.y);
+                dude.y += Math.cos(dude.direction) * (dude.speed * dude.scale.y);
+                dude.rotation = -dude.direction + Math.PI;
+
+                // wrap the maggots
+                if (dude.x < dudeBounds.x) {
+                    dude.x += dudeBounds.width;
+                } else if (dude.x > dudeBounds.x + dudeBounds.width) {
+                    dude.x -= dudeBounds.width;
+                }
+
+                if (dude.y < dudeBounds.y) {
+                    dude.y += dudeBounds.height;
+                } else if (dude.y > dudeBounds.y + dudeBounds.height) {
+                    dude.y -= dudeBounds.height;
+                }
+            }
+
+            // increment the ticker
+            tick += 0.1;
+        });
+    </script>
+
+
+</body>;
